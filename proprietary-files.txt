@@ -55,7 +55,7 @@ vendor/etc/audio_effects.conf
 vendor/etc/audio_output_policy.conf
 vendor/etc/diracmobile.config
 vendor/lib/libacdb-fts.so
-vendor/lib/libacdbloader.so
+vendor/lib/libacdbloader.so:vendor/lib/libacdbloader_vendor.so
 vendor/lib/libacdbmapper.so
 vendor/lib/libacdbrtac.so
 vendor/lib/libadiertac.so
@@ -71,7 +71,7 @@ vendor/lib/soundfx/libqcbassboost.so
 vendor/lib/soundfx/libqcreverb.so
 vendor/lib/soundfx/libqcvirt.so
 vendor/lib64/libacdb-fts.so
-vendor/lib64/libacdbloader.so
+vendor/lib64/libacdbloader.so:vendor/lib64/libacdbloader_vendor.so
 vendor/lib64/libacdbmapper.so
 vendor/lib64/libacdbrtac.so
 vendor/lib64/libadiertac.so
