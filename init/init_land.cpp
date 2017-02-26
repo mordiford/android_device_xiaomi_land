@@ -1,6 +1,6 @@
 /*
    Copyright (c) 2016, The CyanogenMod Project
-
+   Copyright (c) 2017, The Mokee Open Source Project
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions are
    met:
@@ -28,14 +28,21 @@
  */
 
 #include <fcntl.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/sysinfo.h>
+
+#include <cstdlib>
+#include <fstream>
+#include <string>
 
 #include "vendor_init.h"
 #include "property_service.h"
 #include "log.h"
 #include "util.h"
-
-static char board_id[PROP_VALUE_MAX];
 
 static int read_file2(const char *fname, char *data, int max_size)
 {
@@ -60,29 +67,11 @@ static int read_file2(const char *fname, char *data, int max_size)
     return 1;
 }
 
-static void import_cmdline(char *name, int for_emulator)
-{
-    char *value = strchr(name, '=');
-    int name_len = strlen(name);
-    const char s[2] = ":";
-
-    if (value == 0) return;
-    *value++ = 0;
-    if (name_len == 0) return;
-
-    if (!strcmp(name, "board_id")) {
-        value = strtok(value, s);
-        strlcpy(board_id, value, sizeof(board_id));
-    }
-}
-
 static void init_alarm_boot_properties()
 {
     char const *alarm_file = "/proc/sys/kernel/boot_reason";
     char buf[64];
-    char tmp[PROP_VALUE_MAX];
-
-    property_get("ro.boot.alarmboot", tmp);
+    std::string tmp = property_get("ro.boot.alarmboot");
 
     if (read_file2(alarm_file, buf, sizeof(buf))) {
         /*
@@ -100,7 +89,7 @@ static void init_alarm_boot_properties()
          * 7 -> CBLPWR_N pin toggled (for external power supply)
          * 8 -> KPDPWR_N pin toggled (power key pressed)
          */
-        if (buf[0] == '3' || !strcmp(tmp,"true"))
+        if (buf[0] == '3' || tmp == "true")
             property_set("ro.alarm_boot", "true");
         else
             property_set("ro.alarm_boot", "false");
@@ -109,28 +98,30 @@ static void init_alarm_boot_properties()
 
 void vendor_load_properties()
 {
-    char device[PROP_VALUE_MAX];
-    int rc;
+    std::ifstream fin;
+    std::string buf;
 
-    rc = property_get("ro.aicp.device", device);
-    if (!rc || strncmp(device, "land", PROP_VALUE_MAX))
-        return;
+    std::string product = property_get("ro.product.name");
+    if (product.find("land") == std::string::npos)
+          return;
 
-    import_kernel_cmdline(0, import_cmdline);
+    fin.open("/proc/cmdline");
+    while (std::getline(fin, buf, ' '))
+       if (buf.find("board_id") != std::string::npos)
+            break;
+    fin.close();
 
-    property_set("ro.product.wt.boardid", board_id);
-
-    if (!strcmp(board_id, "S88537AA1")) {
+    if (buf.find("S88537AA1") != std::string::npos) {
         property_set("ro.build.display.wtid", "SW_S88537AA1_V053_M20_MP_XM");
-    } else if (!strcmp(board_id, "S88537AB1")) {
+    } else if (buf.find("S88537AB1") != std::string::npos) {
         property_set("ro.build.display.wtid", "SW_S88537AB1_V053_M20_MP_XM");
-    } else if (!strcmp(board_id, "S88537AC1")) {
+    } else if (buf.find("S88537AC1") != std::string::npos) {
         property_set("ro.build.display.wtid", "SW_S88537AC1_V053_M20_MP_XM");
-    } else if (!strcmp(board_id, "S88537BA1")) {
+    } else if (buf.find("S88537BA1") != std::string::npos) {
         property_set("ro.build.display.wtid", "SW_S88537BA1_V053_M20_MP_XM");
-    } else if (!strcmp(board_id, "S88537CA1")) {
+    } else if (buf.find("S88537CA1") != std::string::npos) {
         property_set("ro.build.display.wtid", "SW_S88537CA1_V053_M20_MP_XM");
-    } else if (!strcmp(board_id, "S88537EC1")) {
+    } else if (buf.find("S88537EC1") != std::string::npos) {
         property_set("ro.build.display.wtid", "SW_S88537EC1_V053_M20_MP_XM");
     }
 
