@@ -5,6 +5,6 @@ BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 an
 BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
 BOARD_KERNEL_PAGESIZE :=  2048
 BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x01000000 --tags_offset 0x00000100
-TARGET_KERNEL_CONFIG := cyanogenmod_land_defconfig
+TARGET_KERNEL_CONFIG := msm8937-perf_defconfig
 TARGET_KERNEL_SOURCE := kernel/xiaomi/msm8937
-TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/kernel
+# TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/kernel
