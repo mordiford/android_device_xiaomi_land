@@ -84,7 +84,7 @@ static void init_alarm_boot_properties()
 }
 
 void init_variant_properties() {
-    if (property_get("ro.cm.device") != "land")
+    if (property_get("ro.aicp.device") != "land")
         return;
 
     import_kernel_cmdline(0, import_cmdline);
